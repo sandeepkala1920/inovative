@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <script src="https://cdn.botpress.cloud/webchat/v3.2/inject.js"></script>
+  <script src="https://files.bpcontent.cloud/2025/09/09/12/20250909121218-T1BSA5LI.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tourism</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #eef0f3;
+      color: #1f2937;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+     .bg-jhhand {
+      position: relative;
+      overflow: hidden;
+      background-image: url('https://placehold.co/1920x1080/4F46E5/ffffff?text=Eco+and+Cultural+Tourism+in+Jharkhand');
+      background-size: cover;
+      background-position: center;
+    }
+     .bg-jhhand .faded-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url('https://placehold.co/1920x1080/7F9CF5/ffffff?text=Faded+Background');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.2;
+      animation: fadeInOut 6s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e9f9fb;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a8b8;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64798b;
+    }
+    /* Fade animation keyframes */
+    @keyframes fadeInOut {
+      0%, 100% {
+        opacity: 0.2;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    /* Tailwind v2 CDN doesn't include the line-clamp plugin by default */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+    <div class="flex items-center px-4 py-2 space-x-2 bg-white shadow-lg sticky top-0 z-50">
+    <a href="javascript:void(0)" class="flex items-center space-x-2" onclick="showPage('home')">
+      <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3.055 11H5a2 2 0 012 2v1h.055a2 2 0 011.916 1.34l.222.666A2 2 0 0011 16h2a2 2 0 001.807-1.34l.222-.666A2 2 0 0117 14v-1a2 2 0 012-2h1.945" />
+      </svg>
+      <span class="text-xl font-bold text-gray-800">Tourism</span>
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg sticky top-[56px] z-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="hidden md:block w-full">
+          <div class="flex items-baseline space-x-2 justify-center">
+            <button onclick="showPage('home')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium">Home</button>
+            <button onclick="showPage('tourism-destination')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Tourism</button>
+            <button onclick="showPage('map')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Map</button>
+            <button onclick="showPage('weather')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Weather</button>
+            <button onclick="showPage('calendar')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Calendar</button>
+            <button onclick="showPage('marketplace')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Marketplace</button>
+            <button onclick="showPage('planner')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Trip Planner</button>
+            <button onclick="showPage('toolkit')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Sustainability</button>
+            <button onclick="showPage('content')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Stories</button>
+            <button onclick="showPage('feedback')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Feedback</button>
+            <button onclick="showPage('admin')" class="text-gray-600 hover:bg-gray-100 hover:text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">Admin</button>
+          </div>
+        </div>
+        <div class="md:hidden">
+          <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <span class="sr-only">Open menu</span>
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <button onclick="showPage('home')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Home</button>
+        <button onclick="showPage('tourism-destination')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Tourism</button>
+        <button onclick="showPage('map')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Map</button>
+        <button onclick="showPage('weather')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Weather</button>
+        <button onclick="showPage('calendar')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Calendar</button>
+        <button onclick="showPage('marketplace')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Marketplace</button>
+        <button onclick="showPage('planner')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Trip Planner</button>
+        <button onclick="showPage('toolkit')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Sustainability</button>
+        <button onclick="showPage('content')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Stories</button>
+        <button onclick="showPage('feedback')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Feedback</button>
+        <button onclick="showPage('admin')" class="block w-full text-left px-3 py-1.5 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-800">Admin</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <!-- Home Page -->
+    <section id="home" class="page active">
+      <div class="relative overflow-hidden rounded-3xl shadow-xl h-[100vh] bg-jhhand">
+        <div class="faded-bg"></div>
+        <!-- Main photo background replacing green gradient -->
+        <div class="absolute inset-0 bg-cover bg-center bg-opacity-50 flex flex-col items-center justify-center text-center p-20 space-y-20"
+             style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80'); position: relative; z-index: 1;">
+          <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg max-w-4xl opacity-0 translate-y-8 animate-fade-slide-up delay-200">
+            Discover the <span class="text-green-400">Soul of Tourism </span>
+          </h1>
+          <p class="text-lg md:text-2xl text-green-100 max-w-lg drop-shadow-md opacity-5 translate-y-8 animate-fade-slide-up delay-300">
+            Explore stunning eco-destinations and rich cultural heritage that await your adventure.
+          </p>
+          <button onclick="showPage('tourism-destination')" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-semibold rounded-full py-4 px-8 shadow-lg opacity-0 translate-y-8 animate-fade-slide-up delay-500">
+            Start Your Adventure
+          </button>
+        </div>
+      </div>
+      <style>
+        @keyframes fade-slide-up {
+          0% {
+            opacity: 0;
+            transform: translateY(32px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-slide-up {
+          animation: fade-slide-up 0.8s forwards;
+        }
+        .delay-100 {
+          animation-delay: 0.1s;
+        }
+        .delay-300 {
+          animation-delay: 0.3s;
+        }
+        .delay-500 {
+          animation-delay: 0.5s;
+        }
+      </style>
+    </section>
+
+    <!-- Tourism Destination Page -->
+    <section id="tourism-destination" class="page">
+      <h2 class="text-3xl font-bold mb-10 text-center">Tourism Destination</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Hudru Falls -->
+        <div onclick="openDetailPage('hundru-falls')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Hundru_Falls%2C_Jharkhand%2C_India_4.jpg/1280px-Hundru_Falls%2C_Jharkhand%2C_India_4.jpg" alt="Hudru Falls" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Hudru Falls</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-blue-100 text-green-800 text-xs px-2 rounded-full">Waterfalls</span>
+            <span class="bg-orange-100 text-blue-800 text-xs px-2 rounded-full">Trekking</span>
+            <span class="bg-purple-100 text-purple-800 text-xs px-2 rounded-full">Ranchi</span>
+          </div>
+        </div>
+
+        <!-- Parasnath Hills -->
+        <div onclick="openDetailPage('parasnath-hills')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQv-yI_EZ8g9oZGSRWD3eBUB91fhtpyKv0a5BAQJAhpVEmtL1UBGJLTsz_SRGnnHppI_bxptNCOfW01Og3cSS13aU5i-PSHFdBLwYGXqw" alt="Parasnath Hills" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Parasnath Hills</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 rounded-full">Hills</span>
+            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 rounded-full">Pilgrimage</span>
+          </div>
+        </div>
+
+        <!-- Belta National Park -->
+        <div onclick="openDetailPage('betla-national-park')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://site.outlookindia.com/traveller/wp-content/uploads/2017/06/jharkhand1_Betla-NP_FI.jpg" alt="Betla National Park" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Betla National Park</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-green-100 text-cyan-800 text-xs px-2 rounded-full">Forests</span>
+            <span class="bg-green-100 text-green-800 text-xs px-2 rounded-full">Wildlife</span>
+          </div>
+        </div>
+
+        <!-- Ranchi Lake -->
+        <div onclick="openDetailPage('ranchi-lake')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://travelsetu.com/apps/uploads/new_destinations_photos/destination/2024/01/08/b081b8018be89e3a722644c21b991ad8_1000x1000.jpg" alt="Ranchi Lake" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Ranchi Lake</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-blue-100 text-blue-800 text-xs px-2 rounded-full">Lake</span>
+            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 rounded-full">City</span>
+          </div>
+        </div>
+
+        <!-- Jonha Falls -->
+        <div onclick="openDetailPage('jonha-falls')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Jonha_falls.jpg/960px-Jonha_falls.jpg" alt="Jonha Falls" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Jonha Falls</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-blue-100 text-green-800 text-xs px-2 rounded-full">Waterfalls</span>
+            <span class="bg-purple-100 text-purple-800 text-xs px-2 rounded-full">Nature</span>
+          </div>
+        </div>
+
+        <!-- Rajrappa Temple -->
+        <div onclick="openDetailPage('rajrappa-temple')" class="cursor-pointer bg-white rounded-xl shadow-lg hover:scale-105 transform transition p-6 space-y-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Chhinnamastika_Temple_Rajrappa.jpg/1200px-Chhinnamastika_Temple_Rajrappa.jpg" alt="Rajrappa Temple" class="w-full h-48 object-cover rounded-lg" />
+          <h3 class="text-xl font-semibold text-gray-900">Rajrappa Temple</h3>
+          <p class="text-gray-600 line-clamp-3"></p>
+          <div class="flex gap-2">
+            <span class="bg-red-100 text-red-800 text-xs px-2 rounded-full">Temple</span>
+            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 rounded-full">Pilgrimage</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detail Page -->
+    <section id="detail-page" class="page" style="padding: 1rem;">
+      <button onclick="showPage('tourism-destination')" class="text-indigo-600 underline mb-4 hover:text-indigo-800">&larr; Back to Destinations</button>
+      <h1 id="detail-title" class="text-3xl font-bold mb-4"></h1>
+      <div id="detail-images" class="flex space-x-4 overflow-x-auto mb-6"></div>
+      <p id="detail-description" class="text-lg"></p>
+    </section>
+
+<!--Weather-->
+    <!--<section id="weather" class="page">
+      <h2 class="text-3xl font-bold mb-10 text-center">🌤️ Trip Weather Safety Checker</h2>
+
+      <label class="block mb-4">
+        <span class="text-gray-700">Location (city name):</span>
+        <input type="text" id="location" placeholder="e.g. Ranchi" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+      </label>
+
+      <label class="block mb-4">
+        <span class="text-gray-700">Visit date (YYYY-MM-DD):</span>
+        <input type="date" id="date" class="mt-1 block                        w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />                       
+   <script>
+    const API_KEY = "1a51c4f4db4b481fbca55650250909"; // get free key from weatherapi.com
+
+    async function checkTripSafety() {
+      const loc = document.getElementById("location").value.trim();
+      const date = document.getElementById("date").value;
+      const resultDiv = document.getElementById("result");
+      resultDiv.textContent = "Checking...";
+
+      if (!loc || !date) {
+        resultDiv.textContent = "Please enter both location and date.";
+        return;
+      }
+
+      try {
+        const url =
+          `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}` +
+          `&q=${encodeURIComponent(loc)}&dt=${date}&alerts=yes`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+
+        const day = data.forecast.forecastday[0].day;
+        const alerts = data.alerts && data.alerts.alert ? data.alerts.alert : [];
+
+        const conditionText = day.condition.text;
+        const maxTemp = day.maxtemp_c;
+        const minTemp = day.mintemp_c;
+        const maxWind = day.maxwind_kph;
+        const dailyRainMm = day.totalprecip_mm;
+        const rainChance = day.daily_chance_of_rain;
+
+        let risk = 0;
+        let reasons = [];
+
+        if (rainChance >= 70 || dailyRainMm >= 20) {
+          risk += 2;
+          reasons.push("High chance of heavy rain");
+        }
+        if (maxWind >= 40) {
+          risk += 2;
+          reasons.push("Strong winds expected");
+        }
+        if (maxTemp >= 40) {
+          risk += 2;
+          reasons.push("Extreme heat");
+        }
+        if (minTemp <= 5) {
+          risk += 1;
+          reasons.push("Low temperature (cold conditions)");
+        }
+        if (alerts.length > 0) {
+          risk += 3;
+          reasons.push("Official weather alerts issued");
+        }
+
+        let safetyMsg;
+        let color;
+
+        if (risk <= 1) {
+          safetyMsg = "Safe to travel (Green) – normal conditions for sightseeing.";
+          color = "#c8f7c5";
+        } else if (risk <= 3) {
+          safetyMsg = "Caution advised (Yellow) – plan with backup options and check local updates.";
+          color = "#fff9c4";
+        } else if (risk <= 5) {
+          safetyMsg = "Not ideal (Orange) – consider rescheduling or limiting outdoor activities.";
+          color = "#ffe0b2";
+        } else {
+          safetyMsg = "Avoid travel (Red) – unsafe weather, follow local authorities' advice.";
+          color = "#ffccbc";
+        }
+
+        resultDiv.style.backgroundColor = color;
+        resultDiv.innerHTML = `
+          <strong>${safetyMsg}</strong><br/><br/>
+          <b>Location:</b> ${data.location.name}, ${data.location.country}<br/>
+          <b>Date:</b> ${date}<br/>
+          <b>Condition:</b> ${conditionText}<br/>
+          <b>Temp:</b> ${minTemp}–${maxTemp} °C<br/>
+          <b>Max wind:</b> ${maxWind} kph<br/>
+          <b>Rain chance:</b> ${rainChance}% (≈ ${dailyRainMm} mm)<br/>
+          <b>Alerts:</b> ${alerts.length > 0 ? alerts.map(a => a.headline).join("; ") : "None"}<br/>
+          <b>Reasons:</b> ${reasons.length ? reasons.join("; ") : "No major weather risks detected."}
+        `;
+      } catch (err) {
+        console.error(err);
+        resultDiv.style.backgroundColor = "";
+        resultDiv.textContent = "Failed to fetch weather. Please check API key, city name, date or try again.";
+      }
+    }
+  </script>
+
+      <button onclick="checkTripSafety()" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Check Safety</button>
+
+      <div id="result" class="mt-6 p-4 border rounded-md"></div> 
+  </section>-->
+  <script>
+async function checkWeather() {
+    const city = document.getElementById('city').value.trim();
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const resultDiv = document.getElementById('weather-result');
+    const titleEl = document.getElementById('weather-title');
+    const container = document.getElementById('forecast-container');
+    
+    if (!city || !startDate || !endDate || new Date(startDate) > new Date(endDate)) {
+        alert('Please enter valid city and date range (up to 16 days ahead)');
+        return;
+    }
+    
+    container.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500">Loading forecast...</div>';
+    resultDiv.classList.remove('hidden');
+    
+    try {
+        // Geocode city
+        const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
+        if (geoData.length === 0) throw new Error('City not found');
+        const { lat, lon } = geoData[0];
+        
+        // Fetch forecast for date range [page:0]
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&start_date=${startDate}&end_date=${endDate}&timezone=auto`;
+        const weatherRes = await fetch(weatherUrl);
+        const weatherData = await weatherRes.json();
+        
+        titleEl.textContent = `${city} Forecast (${startDate} to ${endDate})`;
+        displayForecast(weatherData.daily, weatherData.daily.time);
+    } catch (error) {
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-red-600">Error: ${error.message}. Try another city.</div>`;
+    }
+}
+
+function displayForecast(daily, times) {
+    const container = document.getElementById('forecast-container');
+    container.innerHTML = '';
+    
+    for (let i = 0; i < times.length; i++) {
+        const date = new Date(times[i]).toLocaleDateString('en-IN');
+        const maxTemp = daily.temperature_2m_max[i].toFixed(1);
+        const minTemp = daily.temperature_2m_min[i].toFixed(1);
+        const precipProb = daily.precipitation_probability_max[i];
+        const code = daily.weather_code[i];
+        const isSafe = precipProb < 30 && code < 50;
+        const safetyClass = isSafe ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-orange-100 border-orange-300 text-orange-800';
+        const safetyText = isSafe ? '✅ Safe for Travel' : '⚠️ Rain Risk';
+        
+        const dayDiv = document.createElement('div');
+        dayDiv.className = `p-4 border rounded-lg ${safetyClass} backdrop-blur-sm shadow-md`;
+        dayDiv.innerHTML = `
+            <strong class="block text-lg font-semibold">${date}</strong>
+            <div>Hi: ${maxTemp}°C</div>
+            <div>Lo: ${minTemp}°C</div>
+            <div>Precip: ${precipProb}%</div>
+            <div class="font-bold mt-2">${safetyText}</div>
+        `;
+        container.appendChild(dayDiv);
+    }
+}
+</script>
+
+<section id="weather" class="page">
+    <div class="max-w-2xl mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold mb-10 text-center text-gray-800">Trip Weather Safety Checker</h2>
+        
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Destination City</label>
+                    <input type="text" id="city" placeholder="e.g., Ranchi, Paris" value="Ranchi" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input type="date" id="startDate" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" id="endDate" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <button onclick="checkWeather()" 
+                        class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-lg">
+                    Check Weather Safety
+                </button>
+            </div>
+        </div>
+
+        <div id="weather-result" class="bg-white rounded-xl shadow-lg p-6 hidden">
+            <h3 id="weather-title" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+            <div id="forecast-container" class="forecast grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </div>
+    </div>
+</section>
+
+        <!-- 2. Interactive Map & Routes -->
+     <section id="map" class="page">
+      <h2 class="text-3xl font-bold mb-10 text-center">🌍 Interactive Map &amp; Search</h2>
+      <div class="flex justify-center mb-6">
+        <input id="cityInputMap" type="text" placeholder="Enter city" class="p-2 rounded-l-md border border-gray-300 w-1/2 max-w-md" />
+        <button onclick="searchLocation()" class="p-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700">Search</button>
+      </div>
+      <div id="mapContainer" class="rounded-xl shadow-lg mx-auto" style="height:500px; width:90%; max-width:960px;"></div>
+      <div id="errorMap" class="text-red-600 mt-4 text-center"></div>
+    </section>
+        
+        <!-- 3. Cultural Calendar -->
+       
+<section id="calendar" class="page py-12">
+    <h2 class="text-3xl font-bold text-center mb-10">Cultural Calendar</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- January -->
+            <!--<div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-pink-600">January (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Makar Sankranti</h3>
+                <p class="mt-2 text-gray-600 text-sm">A festival celebrating the harvest and the sun's movement into Capricorn. Marked by traditional songs, dances, and kite flying.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>-->
+            
+<div class="bg-gray-100 rounded-lg p-5 relative overflow-hidden group" 
+     style="background-image: url('https://rudralife.com/blog/wp-content/uploads/2023/12/00-1-1600x900.jpg'); background-size: cover; background-position: center; min-height: 220px;">
+    <!-- Overlay for text readability -->
+    <div class="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-50 transition-all duration-300"></div>
+    
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col h-full justify-between py-5 px-4 text-white">
+        <div>
+            <span class="text-sm font-semibold bg-pink-600 bg-opacity-90 px-3 py-1 rounded-full inline-block mb-3">
+                January (Tentative)
+            </span>
+            <h3 class="text-xl font-bold mb-2 drop-shadow-lg">Makar Sankranti</h3>
+            <p class="text-green-100 text-sm leading-relaxed drop-shadow-md line-clamp-3">
+                A festival celebrating the harvest and the sun's movement into Capricorn. Marked by traditional songs, dances, and kite flying.
+            </p>
+        </div>
+        <button onclick="openModal('booking-modal')" 
+                class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            Book a Village Tour
+        </button>
+    </div>
+</div>
+
+            <!-- March-April -->
+            <div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-indigo-600">March-April (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Sarhul Festival</h3>
+                <p class="mt-2 text-gray-600 text-sm">A major tribal festival celebrating the arrival of spring. The Sal trees are worshiped as a sign of respect for nature.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>
+            <!-- May-June -->
+            <div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-teal-600">May-June (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Jitia Festival</h3>
+                <p class="mt-2 text-gray-600 text-sm">A tribal festival where mothers fast and pray for the safety and longevity of their children, celebrated with ritual songs and dances.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>
+            <!-- August-September -->
+            <div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-green-600">August-September (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Karam Festival</h3>
+                <p class="mt-2 text-gray-600 text-sm">Celebrated to invoke the Karam Devta (god of fate), this festival is marked by singing, dancing, and the planting of a Karam tree branch.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>
+            <!-- October-November -->
+            <div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-orange-600">October-November (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Sohrai Festival</h3>
+                <p class="mt-2 text-gray-600 text-sm">A harvest festival where tribal people paint their houses with beautiful murals and worship livestock.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>
+            <!-- December -->
+            <div class="bg-gray-100 rounded-lg p-5">
+                <span class="text-sm font-semibold text-red-600">December (Tentative)</span>
+                <h3 class="text-xl font-bold mt-2 text-gray-800">Karma Puja</h3>
+                <p class="mt-2 text-gray-600 text-sm">A festival to worship the Karma tree, symbolizing youth and vitality, including traditional dances and music around the tree.</p>
+                <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book a Village Tour</button>
+            </div>
+        </div>
+    </div>
+</section> 
+
+        <!-- 4. Local Experiences Marketplace -->
+        <section id="marketplace" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Local Experiences Marketplace</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Example Experience Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <img class="w-full h-48 object-cover" src="https://placehold.co/600x400/D1D5DB/1F2937?text=Dokra+Artisan+Workshop" alt="Dokra Art">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900">Dokra Artisan Workshop</h3>
+                            <span class="text-sm font-medium text-green-600">$50/person</span>
+                        </div>
+                        <p class="mt-2 text-gray-600 text-sm">Learn the ancient art of Dokra metal casting directly from a local artisan in a rural village. All materials provided.</p>
+                        <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book Now</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <img class="w-full h-48 object-cover" src="https://placehold.co/600x400/D1D5DB/1F2937?text=Sustainable+Homestay" alt="Homestay">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900">Sustainable Homestay</h3>
+                            <span class="text-sm font-medium text-green-600">$30/night</span>
+                        </div>
+                        <p class="mt-2 text-gray-600 text-sm">Stay in a traditional mud house with a local family, enjoy home-cooked meals, and learn about sustainable living practices.</p>
+                        <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book Now</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <img class="w-full h-48 object-cover" src="https://placehold.co/600x400/D1D5DB/1F2937?text=Licensed+Local+Guide" alt="Guide">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-900">Licensed Local Guide</h3>
+                            <span class="text-sm font-medium text-green-600">$40/day</span>
+                        </div>
+                        <p class="mt-2 text-gray-600 text-sm">Explore hidden trails and learn about the local ecosystem with a certified guide from the local community.</p>
+                        <button onclick="openModal('booking-modal')" class="mt-4 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Sustainability Toolkit -->
+        <section id="toolkit" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Sustainability Toolkit</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Leave No Trace Tips</h3>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-600">
+                        <li>Plan ahead and prepare.</li>
+                        <li>Travel and camp on durable surfaces.</li>
+                        <li>Dispose of waste properly.</li>
+                        <li>Leave what you find.</li>
+                        <li>Minimize campfire impacts.</li>
+                        <li>Respect wildlife.</li>
+                        <li>Be considerate of other visitors.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Site Carrying Capacity</h3>
+                    <div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full bg-gray-200">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <div class="text-5xl font-bold text-green-600">75%</div>
+                            <p class="text-gray-500">Current Occupancy</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-600">This indicator helps manage tourist flow to reduce environmental stress. The color changes based on occupancy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Trip Planner & Itineraries -->
+        <section id="planner" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Trip Planner & Itineraries</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Pre-Built Itineraries</h3>
+                    <div class="space-y-4">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="text-lg font-medium text-gray-800">The Cultural Trail (3 Days)</h4>
+                            <p class="text-gray-600 text-sm">Explore Ranchi, visit tribal villages, and witness traditional art forms.</p>
+                            <button onclick="copyToClipboard('cultural-itinerary')" class="mt-2 text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+                                Copy Itinerary
+                            </button>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="text-lg font-medium text-gray-800">Eco-Adventure Circuit (5 Days)</h4>
+                            <p class="text-gray-600 text-sm">Experience Betla National Park, Hundru Falls, and trekking in the hills.</p>
+                            <button onclick="copyToClipboard('eco-itinerary')" class="mt-2 text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+                                Copy Itinerary
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Create Your Own Trip</h3>
+                    <form onsubmit="handleFormSubmit(event, 'Trip Planner')">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="trip-name" class="block text-sm font-medium text-gray-700">Trip Name</label>
+                          <input type="text" id="trip-name" name="tripName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            </div>
+                            <div>
+                                <label for="start-date" class="block text-sm font-medium text-gray-700">Start Date</label>
+                          <input type="date" id="start-date" name="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                            </div>
+                      <div>
+                        <label for="trip-days" class="block text-sm font-medium text-gray-700">Days</label>
+                        <input type="number" id="trip-days" name="days" min="1" max="30" value="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                      </div>
+                            <div>
+                                <label for="destinations" class="block text-sm font-medium text-gray-700">Destinations (e.g., Ranchi, Parasnath, Betla)</label>
+                          <textarea id="destinations" name="destinations" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Create Trip</button>
+                      <div id="trip-itinerary-result" class="text-sm text-gray-700"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Trip Planner: Rain Forecast Tool -->
+<div class="bg-white rounded-xl shadow-lg p-6 my-6">
+  <h3 class="text-xl font-bold mb-4 text-gray-800">Rain Forecast for Your Planned Trip</h3>
+  <form id="rain-predict-form" action="/predict" method="post" class="space-y-4">
+    <div class="flex items-center gap-4 text-sm">
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="RainMode" value="live" checked>
+        <span>Live forecast</span>
+      </label>
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="RainMode" value="manual">
+        <span>Manual inputs</span>
+      </label>
+    </div>
+
+    <div id="rain-live-fields" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input name="City" type="text" placeholder="City (e.g., Ranchi)" class="border p-2 rounded">
+      <input name="StartDate" type="date" class="border p-2 rounded">
+      <input name="EndDate" type="date" class="border p-2 rounded">
+      <div class="md:col-span-3 text-xs text-gray-500">Live forecast supports up to 16 days.</div>
+      <div class="md:col-span-3">
+        <button id="use-trip-details" type="button" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition-colors">
+          Use Trip Details
+        </button>
+      </div>
+    </div>
+
+    <div id="rain-manual-fields" class="grid grid-cols-2 gap-4">
+      <input name="MinTemp" type="number" step="0.1" placeholder="Min Temperature (°C)" class="border p-2 rounded">
+      <input name="MaxTemp" type="number" step="0.1" placeholder="Max Temperature (°C)" class="border p-2 rounded">
+      <input name="Humidity" type="number" step="0.1" placeholder="Humidity (%)" class="border p-2 rounded">
+      <input name="Pressure" type="number" step="0.1" placeholder="Pressure (hPa)" class="border p-2 rounded">
+      <input name="WindSpeed" type="number" step="0.1" placeholder="Wind Speed (km/h)" class="border p-2 rounded">
+      <input name="CloudCover" type="number" step="0.1" placeholder="Cloud Cover (%)" class="border p-2 rounded">
+    </div>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Get Rain Prediction</button>
+  </form>
+  <div id="rain-predict-result" class="mt-4 text-sm text-gray-700"></div>
+</div>      
+
+</section>
+
+        <!-- 7. Content & Storytelling -->
+        <section id="content" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Content & Storytelling</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Video/Audio Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <div class="relative h-48 bg-gray-200 flex items-center justify-center">
+                        <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm12 13l4-4-4-4V7l4 4-4 4v-4l4 4v4h-4z" />
+                        </svg>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold">Short Documentary: Tribes of Jharkhand</h3>
+                        <p class="mt-2 text-gray-600 text-sm">A short film about the culture and traditions of the Munda and Santhal tribes.</p>
+                    </div>
+                </div>
+                <!-- Artisan Profile Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <img class="w-full h-48 object-cover" src="https://placehold.co/600x400/D1D5DB/1F2937?text=Artisan+Profile" alt="Artisan Profile">
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold">Artisan Profile: Basanti Devi</h3>
+                        <p class="mt-2 text-gray-600 text-sm">Meet a local artisan preserving the traditional Sohrai and Khovar art forms.</p>
+                    </div>
+                </div>
+                <!-- Photo Gallery Link Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+                    <div class="relative h-48 bg-gray-200 flex items-center justify-center">
+                        <svg class="h-16 w-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M15 13.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 19l3-4 2 2.5L13 13l6 6H5z" />
+                        </svg>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold">Photo Gallery: Nature & People</h3>
+                        <p class="mt-2 text-gray-600 text-sm">Browse stunning visuals of Jharkhand's landscapes and vibrant communities.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Feedback and Reporting -->
+        <section id="feedback" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Feedback & Reporting</h2>
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto">
+                <form onsubmit="handleFormSubmit(event, 'Feedback')">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="review" class="block text-sm font-medium text-gray-700">Leave a Review</label>
+                            <textarea id="review" name="review" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Share your experience..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white rounded-lg py-2 font-medium hover:bg-green-700 transition-colors">Submit Review</button>
+                    </div>
+                </form>
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800">Report an Issue</h3>
+                    <p class="mt-2 text-gray-600 text-sm">Use this feature to report litter, safety hazards, or other impacts at a specific location.</p>
+                    <button onclick="handleFormSubmit(event, 'Impact Report')" class="mt-4 w-full bg-red-600 text-white rounded-lg py-2 font-medium hover:bg-red-700 transition-colors">
+                        Submit Geo-tagged Impact Report
+                    </button>
+                    <p class="mt-2 text-xs text-gray-500 text-center">Note: This is a prototype. A real app would use your device's location to tag the report.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Admin Dashboard (V2) -->
+        <section id="admin" class="page py-12">
+            <h2 class="text-3xl font-bold text-center mb-10">Admin Dashboard</h2>
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <div class="bg-indigo-100 p-6 rounded-lg">
+                        <h4 class="text-4xl font-bold text-indigo-600">12,500</h4>
+                        <p class="mt-1 text-gray-600 font-medium">Monthly Footfall</p>
+                    </div>
+                    <div class="bg-purple-100 p-6 rounded-lg">
+                        <h4 class="text-4xl font-bold text-purple-600">850</h4>
+                        <p class="mt-1 text-gray-600 font-medium">Total Bookings</p>
+                    </div>
+                    <div class="bg-green-100 p-6 rounded-lg">
+                        <h4 class="text-4xl font-bold text-green-600">42</h4>
+                        <p class="mt-1 text-gray-600 font-medium">New Reports</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Recent Bookings</h3>
+                    <div class="overflow-x-auto rounded-lg">  
+                        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                            <thead class="bg-gray-100">
+                                <tr>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                </tr>
+                            </thead>
+                      <tbody id="admin-bookings-body" class="divide-y divide-gray-200">
+                        <tr>
+                          <td colspan="5" class="px-6 py-4 text-sm text-gray-500">Open the Admin Dashboard to load recent bookings.</td>
+                        </tr>
+                      </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-8">
+                  <h3 class="text-2xl font-semibold text-gray-800 mb-4">Recent Feedback</h3>
+                  <div id="admin-feedback" class="space-y-3">
+                    <p class="text-sm text-gray-500">Open the Admin Dashboard to load recent feedback.</p>
+                  </div>
+                </div>
+                <div class="mt-8">
+                  <h3 class="text-2xl font-semibold text-gray-800 mb-4">Recent Trips</h3>
+                  <div id="admin-trips" class="space-y-3">
+                    <p class="text-sm text-gray-500">Open the Admin Dashboard to load recent trips.</p>
+                  </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm mx-auto text-center transform scale-95 transition-transform duration-300">
+            <svg class="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-4 text-xl font-semibold text-gray-900" id="success-modal-title">Success!</h3>
+            <p class="mt-2 text-gray-600" id="success-modal-message">Your action was completed successfully.</p>
+            <button onclick="closeModal('success-modal')" class="mt-6 w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">OK</button>
+        </div>
+    </div>
+    
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-900">Book Experience</h3>
+                <button onclick="closeModal('booking-modal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <form onsubmit="handleFormSubmit(event, 'Booking')">
+                <div class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                  <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                  <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                  <input type="date" id="date" name="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition-colors">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data for pre-built itineraries (simulated)
+        const itineraries = {
+            'cultural-itinerary': `Day 1: Arrive in Ranchi, visit local markets and Jagannath Temple.
+Day 2: Village tour to learn about tribal art (Sohrai/Khovar) and culture.
+Day 3: Explore the tribal museum and depart.`,
+            'eco-itinerary': `Day 1: Arrive and transfer to Betla National Park. Evening safari.
+Day 2: Morning safari, then hike to Betla Fort.
+Day 3: Travel to Hundru Falls, enjoy the scenic views.
+Day 4: Trekking near Hundru and visit a nearby village.
+Day 5: Departure from Ranchi.`,
+        };
+
+      // Destination data (used by the Destinations page -> Detail page)
+      const destinationsData = {
+        'hundru-falls': {
+          title: 'Hudru Falls',
+          description:
+            'A spectacular waterfall near Ranchi, surrounded by lush greenery and excellent trekking trails. Ideal to visit during the monsoon season.',
+          images: [
+            'https://dynamic-media-cdn.tripadvisor.com/media/photo/o1/13/40/03/hudru-falls.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/6/6f/HDru_Falls_2.jpg',
+            'https://www.nativeplanet.com/img/2020/hudru-falls-2.jpg',
+          ],
+        },
+        'parasnath-hills': {
+          title: 'Parasnath Hills',
+          description:
+            'Major pilgrimage site for Jains offering serene landscapes with multiple temples atop the hill and panoramic views.',
+          images: [
+            'https://upload.wikimedia.org/wikipedia/commons/f/f1/Parasnath_Hills.jpg',
+            'https://www.nativeplanet.com/img/2020/parasnath-hill-1.jpg',
+          ],
+        },
+        'betla-national-park': {
+          title: 'Betla National Park',
+          description:
+            'A revered wildlife sanctuary hosting diverse flora and fauna including elephants, tigers, and leopards, along with historic forts.',
+          images: [
+            'https://site.outlookindia.com/traveller/wp-content/uploads/2017/06/jharkhand1_Betla-NP_FI.jpg',
+          ],
+        },
+        'ranchi-lake': {
+          title: 'Ranchi Lake',
+          description:
+            'A tranquil urban lake with boating facilities and scenic surroundings perfect for relaxation right within Ranchi city.',
+          images: [
+            'https://travelsetu.com/apps/uploads/new_destinations_photos/destination/2024/01/08/b081b8018be89e3a722644c21b991ad8_1000x1000.jpg',
+          ],
+        },
+        'jonha-falls': {
+          title: 'Jonha Falls',
+          description:
+            'A beautiful cascading waterfall located on the outskirts of Ranchi offering a peaceful escape amidst nature.',
+          images: [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Jonha_falls.jpg/960px-Jonha_falls.jpg',
+          ],
+        },
+        'rajrappa-temple': {
+          title: 'Rajrappa Temple',
+          description:
+            'A famous pilgrimage temple situated at the confluence of rivers Damodar and Bhairavi, known for its spiritual significance.',
+          images: [
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Chhinnamastika_Temple_Rajrappa.jpg/1200px-Chhinnamastika_Temple_Rajrappa.jpg',
+          ],
+        },
+      };
+
+      function openDetailPage(id) {
+        const data = destinationsData[id];
+        if (!data) return;
+
+        const titleEl = document.getElementById('detail-title');
+        const descEl = document.getElementById('detail-description');
+        const imagesEl = document.getElementById('detail-images');
+
+        if (!titleEl || !descEl || !imagesEl) return;
+
+        titleEl.textContent = data.title;
+        descEl.textContent = data.description;
+        imagesEl.innerHTML = '';
+
+        data.images.forEach((src) => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = data.title;
+          img.className = 'h-64 rounded-lg shadow-md flex-shrink-0';
+          imagesEl.appendChild(img);
+        });
+
+        if (typeof showPage === 'function') {
+          showPage('detail-page');
+        }
+      }
+
+        // Universal function to open a modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+          if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        // Universal function to close a modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+          if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Re-enable scrolling
+        }
+
+        // Handle form submissions universally
+        async function handleFormSubmit(event, formType) {
+            event.preventDefault();
+
+            const modalTitle = document.getElementById('success-modal-title');
+            const modalMessage = document.getElementById('success-modal-message');
+
+            const openSuccessModal = (title, message) => {
+              if (modalTitle) modalTitle.textContent = title;
+              if (modalMessage) modalMessage.textContent = message;
+              openModal('success-modal');
+            };
+
+            const form = event.target && event.target.tagName === 'FORM' ? event.target : null;
+
+            // Only Booking + Feedback + Trip Planner are persisted in the current backend MVP.
+            // Other actions keep the original prototype behavior.
+            if (!form || (formType !== 'Booking' && formType !== 'Feedback' && formType !== 'Trip Planner')) {
+              openSuccessModal(`${formType} Submitted!`, 'Thank you for your submission. This information would be processed by our backend system.');
+              if (form) {
+                setTimeout(() => form.reset(), 500);
+              }
+              return;
+            }
+
+            try {
+              if (formType === 'Booking') {
+                const data = Object.fromEntries(new FormData(form));
+                const payload = {
+                  name: (data.name || '').toString().trim(),
+                  email: (data.email || '').toString().trim(),
+                  date: (data.date || '').toString().trim(),
+                  service: 'Experience',
+                };
+
+                const res = await fetch('/api/bookings', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+                const out = await res.json().catch(() => ({}));
+
+                if (!res.ok || !out.ok) {
+                  openSuccessModal('Booking Failed', out.error || 'Could not save booking. Ensure MongoDB is connected.');
+                  return;
+                }
+
+                closeModal('booking-modal');
+                openSuccessModal('Booking Confirmed!', 'Your booking has been saved successfully.');
+                setTimeout(() => form.reset(), 300);
+                return;
+              }
+
+              if (formType === 'Feedback') {
+                const data = Object.fromEntries(new FormData(form));
+                const payload = {
+                  review: (data.review || '').toString().trim(),
+                };
+
+                const res = await fetch('/api/feedback', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+                const out = await res.json().catch(() => ({}));
+
+                if (!res.ok || !out.ok) {
+                  openSuccessModal('Feedback Failed', out.error || 'Could not save feedback. Ensure MongoDB is connected.');
+                  return;
+                }
+
+                openSuccessModal('Feedback Submitted!', 'Thanks for your review — it has been saved successfully.');
+                setTimeout(() => form.reset(), 300);
+                return;
+              }
+
+              if (formType === 'Trip Planner') {
+                const data = Object.fromEntries(new FormData(form));
+                const payload = {
+                  tripName: (data.tripName || '').toString().trim(),
+                  startDate: (data.startDate || '').toString().trim(),
+                  days: Number(data.days),
+                  destinations: (data.destinations || '').toString().trim(),
+                };
+
+                const res = await fetch('/api/trips', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+                const out = await res.json().catch(() => ({}));
+
+                if (!res.ok || !out.ok) {
+                  openSuccessModal('Trip Save Failed', out.error || 'Could not save trip. Ensure MongoDB is connected.');
+                  return;
+                }
+
+                const resultEl = document.getElementById('trip-itinerary-result');
+                const trip = out?.trip;
+                const itinerary = Array.isArray(trip?.itinerary) ? trip.itinerary : [];
+                if (resultEl) {
+                  const esc = typeof escapeHtml === 'function'
+                    ? escapeHtml
+                    : (value) => String(value)
+                      .replaceAll('&', '&amp;')
+                      .replaceAll('<', '&lt;')
+                      .replaceAll('>', '&gt;')
+                      .replaceAll('"', '&quot;')
+                      .replaceAll("'", '&#39;');
+
+                  if (itinerary.length === 0) {
+                    resultEl.textContent = '';
+                  } else {
+                    const lines = itinerary.map((d) => {
+                      const day = d?.day;
+                      const date = d?.date;
+                      const location = d?.location;
+                      const acts = Array.isArray(d?.activities) ? d.activities : [];
+                      const head = `Day ${day || ''}${date ? ` (${date})` : ''}: ${location || ''}`.trim();
+                      const body = acts.length ? ` - ${acts.join(' • ')}` : '';
+                      return `${head}${body}`;
+                    });
+                    resultEl.innerHTML = `
+                      <div class="mt-4 border-t border-gray-200 pt-4">
+                        <div class="font-semibold text-gray-900">Generated Itinerary</div>
+                        <div class="mt-2 space-y-2">
+                          ${lines.map((t) => `<div class="bg-gray-50 border border-gray-200 rounded-lg p-3">${esc(t)}</div>`).join('')}
+                        </div>
+                      </div>`;
+                  }
+                }
+
+                openSuccessModal('Trip Saved!', 'Your trip and day-by-day itinerary have been generated and saved.');
+                setTimeout(() => form.reset(), 300);
+                return;
+              }
+            } catch (err) {
+              openSuccessModal(`${formType} Failed`, 'Could not reach backend. Start the server with `npm run dev`.');
+            }
+        }
+
+        // Function to copy text to the clipboard
+        function copyToClipboard(itineraryId) {
+            const itineraryText = itineraries[itineraryId];
+            if (!itineraryText) {
+                return;
+            }
+
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = itineraryText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const modalTitle = document.getElementById('success-modal-title');
+                    const modalMessage = document.getElementById('success-modal-message');
+                    modalTitle.textContent = 'Copied to Clipboard!';
+                    modalMessage.textContent = 'The itinerary has been copied to your clipboard.';
+                    openModal('success-modal');
+                } else {
+                    console.error('Copy command was unsuccessful.');
+                }
+            } catch (err) {
+                console.error('Oops, unable to copy', err);
+            } finally {
+                document.body.removeChild(tempTextArea);
+            }
+        }
+
+        // Wire the Rain Forecast tool to the backend /predict endpoint
+        document.addEventListener('DOMContentLoaded', () => {
+          const form = document.getElementById('rain-predict-form');
+          const resultEl = document.getElementById('rain-predict-result');
+          const liveFields = document.getElementById('rain-live-fields');
+          const manualFields = document.getElementById('rain-manual-fields');
+          const useTripBtn = document.getElementById('use-trip-details');
+          if (!form || !resultEl) return;
+
+          const esc = (value) => String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+
+          const setMode = (mode) => {
+            const live = mode === 'live';
+
+            if (liveFields) {
+              liveFields.style.display = live ? '' : 'none';
+              liveFields.querySelectorAll('input,select,textarea').forEach((el) => {
+                el.disabled = !live;
+                el.required = live;
+              });
+            }
+
+            if (manualFields) {
+              manualFields.style.display = live ? 'none' : '';
+              manualFields.querySelectorAll('input,select,textarea').forEach((el) => {
+                el.disabled = live;
+                el.required = !live;
+              });
+            }
+          };
+
+          // Default to live forecast; keep inputs consistent with the selected radio.
+          setMode('live');
+
+          const parseIsoDateUtc = (value) => {
+            const s = String(value || '').trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+            const d = new Date(`${s}T00:00:00Z`);
+            return Number.isNaN(d.getTime()) ? null : d;
+          };
+
+          const fmtIsoDateUtc = (date) => {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+            return date.toISOString().slice(0, 10);
+          };
+
+          const firstDestination = (value) => {
+            const parts = String(value || '')
+              .split(/[\n,;]+/g)
+              .map((s) => s.trim())
+              .filter(Boolean);
+            return parts[0] || '';
+          };
+
+          const fillFromTripPlanner = () => {
+            const tripStart = document.getElementById('start-date')?.value;
+            const tripDaysRaw = document.getElementById('trip-days')?.value;
+            const tripDestinations = document.getElementById('destinations')?.value;
+
+            const start = parseIsoDateUtc(tripStart);
+            const days = Number.isFinite(Number(tripDaysRaw)) ? Math.floor(Number(tripDaysRaw)) : null;
+            const city = firstDestination(tripDestinations);
+
+            const cityInput = form.querySelector('input[name="City"]');
+            const startInput = form.querySelector('input[name="StartDate"]');
+            const endInput = form.querySelector('input[name="EndDate"]');
+
+            if (!cityInput || !startInput || !endInput) return;
+
+            if (city) cityInput.value = city;
+            if (start) startInput.value = fmtIsoDateUtc(start) || '';
+
+            if (start && Number.isFinite(days) && days >= 1) {
+              const end = new Date(start);
+              end.setUTCDate(end.getUTCDate() + (days - 1));
+              endInput.value = fmtIsoDateUtc(end) || '';
+            }
+
+            const liveRadio = form.querySelector('input[name="RainMode"][value="live"]');
+            if (liveRadio) {
+              liveRadio.checked = true;
+              setMode('live');
+            }
+
+            resultEl.textContent = 'Filled from Trip Planner. Click “Get Rain Prediction”.';
+          };
+
+          if (useTripBtn) {
+            useTripBtn.addEventListener('click', fillFromTripPlanner);
+          }
+
+          form.querySelectorAll('input[name="RainMode"]').forEach((radio) => {
+            radio.addEventListener('change', () => {
+              const selected = form.querySelector('input[name="RainMode"]:checked')?.value || 'live';
+              setMode(selected);
+              resultEl.textContent = '';
+            });
+          });
+
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            resultEl.textContent = 'Predicting...';
+
+            try {
+              const selected = form.querySelector('input[name="RainMode"]:checked')?.value || 'live';
+              const body = new URLSearchParams(new FormData(form));
+              const res = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body,
+              });
+
+              const data = await res.json();
+              if (!res.ok || !data?.ok) {
+                resultEl.textContent = data?.error || 'Prediction failed.';
+                return;
+              }
+
+              if (data.source === 'open-meteo') {
+                const daily = Array.isArray(data.daily) ? data.daily : [];
+                const maxProb = Number.isFinite(Number(data.maxPrecipProbability)) ? Number(data.maxPrecipProbability) : null;
+                const avgProb = Number.isFinite(Number(data.avgPrecipProbability)) ? Number(data.avgPrecipProbability) : null;
+                const city = data.city || '';
+                const risk = data.riskLevel || '';
+
+                resultEl.innerHTML = `
+                  <div class="font-semibold text-gray-900">${esc(data.summary || 'Live forecast result')}</div>
+                  <div class="mt-1 text-gray-600">Location: ${esc(city)} • Risk: ${esc(risk)}</div>
+                  <div class="mt-1 text-gray-600">Max chance: ${maxProb === null ? '-' : `${Math.round(maxProb)}%`} • Avg chance: ${avgProb === null ? '-' : `${Math.round(avgProb)}%`}</div>
+                  ${daily.length ? `
+                    <div class="mt-3 overflow-x-auto">
+                      <table class="min-w-full bg-white border border-gray-200 rounded-lg text-sm">
+                        <thead class="bg-gray-100">
+                          <tr>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Rain Chance</th>
+                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rain (mm)</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                          ${daily.map((d) => {
+                            const date = d?.date || '-';
+                            const p = Number.isFinite(Number(d?.precipitationProbabilityMax)) ? `${Math.round(Number(d.precipitationProbabilityMax))}%` : '-';
+                            const mm = Number.isFinite(Number(d?.precipitationSumMm)) ? `${Number(d.precipitationSumMm).toFixed(1)}` : '-';
+                            return `<tr>
+                              <td class="px-3 py-2 whitespace-nowrap text-gray-700">${esc(date)}</td>
+                              <td class="px-3 py-2 whitespace-nowrap text-gray-700">${esc(p)}</td>
+                              <td class="px-3 py-2 whitespace-nowrap text-gray-700">${esc(mm)}</td>
+                            </tr>`;
+                          }).join('')}
+                        </tbody>
+                      </table>
+                    </div>
+                  ` : ''}
+                `;
+                return;
+              }
+
+              // Heuristic mode
+              const pct = Math.round((data.confidence || 0) * 100);
+              resultEl.innerHTML = `<div class="font-semibold text-gray-900">${esc(data.summary)}</div>
+                <div class="text-gray-600">Confidence: ${esc(String(pct))}%</div>`;
+            } catch (err) {
+              resultEl.textContent = 'Could not reach backend. Start the server with `npm run dev`.';
+            }
+          });
+        });
+    </script>
+
+    <!-- Include Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // Global variables for map and marker
+    let map, marker;
+
+    const pages = document.querySelectorAll('.page');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    async function loadAdminData() {
+      const bookingsBody = document.getElementById('admin-bookings-body');
+      const feedbackEl = document.getElementById('admin-feedback');
+      const tripsEl = document.getElementById('admin-trips');
+      if (!bookingsBody || !feedbackEl || !tripsEl) return;
+
+      bookingsBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-sm text-gray-500">Loading bookings...</td></tr>';
+      feedbackEl.innerHTML = '<p class="text-sm text-gray-500">Loading feedback...</p>';
+      tripsEl.innerHTML = '<p class="text-sm text-gray-500">Loading trips...</p>';
+
+      try {
+        const [bookingsRes, feedbackRes, tripsRes] = await Promise.all([
+          fetch('/api/bookings?limit=10'),
+          fetch('/api/feedback?limit=10'),
+          fetch('/api/trips?limit=10'),
+        ]);
+
+        const bookingsOut = await bookingsRes.json().catch(() => ({}));
+        const feedbackOut = await feedbackRes.json().catch(() => ({}));
+        const tripsOut = await tripsRes.json().catch(() => ({}));
+
+        if (!bookingsRes.ok || !bookingsOut.ok) {
+          const msg = bookingsOut.error || 'Could not load bookings. Ensure MongoDB is connected.';
+          bookingsBody.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-sm text-red-600">${escapeHtml(msg)}</td></tr>`;
+        } else {
+          const bookings = Array.isArray(bookingsOut.bookings) ? bookingsOut.bookings : [];
+          if (bookings.length === 0) {
+            bookingsBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-sm text-gray-500">No bookings yet.</td></tr>';
+          } else {
+            bookingsBody.innerHTML = bookings.map((b) => {
+              const idFull = b?._id || '';
+              const idShort = idFull ? `#${String(idFull).slice(-6)}` : '-';
+              const service = b?.service || '-';
+              const name = b?.name || '-';
+              const email = b?.email || '-';
+              const date = b?.date || '-';
+              return `
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" title="${escapeHtml(idFull)}">${escapeHtml(idShort)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(service)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(name)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(email)}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${escapeHtml(date)}</td>
+                </tr>`;
+            }).join('');
+          }
+        }
+
+        if (!feedbackRes.ok || !feedbackOut.ok) {
+          const msg = feedbackOut.error || 'Could not load feedback. Ensure MongoDB is connected.';
+          feedbackEl.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(msg)}</p>`;
+        } else {
+          const feedback = Array.isArray(feedbackOut.feedback) ? feedbackOut.feedback : [];
+          if (feedback.length === 0) {
+            feedbackEl.innerHTML = '<p class="text-sm text-gray-500">No feedback yet.</p>';
+          } else {
+            feedbackEl.innerHTML = feedback.map((f) => {
+              const review = f?.review || '';
+              const createdAt = f?.createdAt ? new Date(f.createdAt).toLocaleString() : '';
+              return `
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div class="text-sm text-gray-800">${escapeHtml(review)}</div>
+                  ${createdAt ? `<div class=\"mt-2 text-xs text-gray-500\">${escapeHtml(createdAt)}</div>` : ''}
+                </div>`;
+            }).join('');
+          }
+        }
+
+        if (!tripsRes.ok || !tripsOut.ok) {
+          const msg = tripsOut.error || 'Could not load trips. Ensure MongoDB is connected.';
+          tripsEl.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(msg)}</p>`;
+        } else {
+          const trips = Array.isArray(tripsOut.trips) ? tripsOut.trips : [];
+          if (trips.length === 0) {
+            tripsEl.innerHTML = '<p class="text-sm text-gray-500">No trips yet.</p>';
+          } else {
+            tripsEl.innerHTML = trips.map((t) => {
+              const tripName = t?.tripName || '';
+              const startDate = t?.startDate || '';
+              const destinations = t?.destinations || '';
+              const days = t?.days;
+              const itinerary = Array.isArray(t?.itinerary) ? t.itinerary : [];
+              const createdAt = t?.createdAt ? new Date(t.createdAt).toLocaleString() : '';
+
+              const itineraryPreview = itinerary
+                .slice(0, 3)
+                .map((d) => {
+                  const day = d?.day;
+                  const location = d?.location;
+                  if (!day && !location) return '';
+                  return `Day ${day || ''}: ${location || ''}`.trim();
+                })
+                .filter(Boolean);
+
+              return `
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div class="text-sm font-semibold text-gray-900">${escapeHtml(tripName || 'Untitled Trip')}</div>
+                  <div class="mt-1 text-sm text-gray-700"><span class="font-medium">Start:</span> ${escapeHtml(startDate || '-')}</div>
+                  ${Number.isFinite(Number(days)) ? `<div class=\"mt-1 text-sm text-gray-700\"><span class=\"font-medium\">Days:</span> ${escapeHtml(String(days))}</div>` : ''}
+                  <div class="mt-1 text-sm text-gray-700"><span class="font-medium">Destinations:</span> ${escapeHtml(destinations || '-')}</div>
+                  ${itineraryPreview.length ? `<div class=\"mt-2 text-sm text-gray-700\"><span class=\"font-medium\">Itinerary:</span> ${escapeHtml(itineraryPreview.join(' | '))}</div>` : ''}
+                  ${createdAt ? `<div class=\"mt-2 text-xs text-gray-500\">${escapeHtml(createdAt)}</div>` : ''}
+                </div>`;
+            }).join('');
+          }
+        }
+      } catch (err) {
+        bookingsBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-sm text-red-600">Could not reach backend. Start the server with npm run dev.</td></tr>';
+        feedbackEl.innerHTML = '<p class="text-sm text-red-600">Could not reach backend. Start the server with npm run dev.</p>';
+        tripsEl.innerHTML = '<p class="text-sm text-red-600">Could not reach backend. Start the server with npm run dev.</p>';
+      }
+    }
+
+    function showPage(id) {
+      pages.forEach(p => p.classList.remove('active'));
+      const page = document.getElementById(id);
+      if (page) page.classList.add('active');
+      window.scrollTo(0, 0);
+      if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+      }
+      if (id === 'map' && map) {
+        setTimeout(() => map.invalidateSize(), 300);
+      }
+      if (id === 'admin') {
+        loadAdminData();
+      }
+    }
+
+    if (mobileMenuButton) {
+      mobileMenuButton.addEventListener('click', () => {
+        if (mobileMenu) mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    // Initialize map on DOM content loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      map = L.map('mapContainer').setView([23.5, 85.33], 6); // Center on Jharkhand approx
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+    });
+
+    // Search location function
+    async function searchLocation() {
+      const city = document.getElementById('cityInputMap').value.trim();
+      const errorDiv = document.getElementById('errorMap');
+      errorDiv.textContent = '';
+      if (!city) {
+        errorDiv.textContent = '⚠️ Please enter a location';
+        return;
+      }
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
+        const data = await response.json();
+        if (!data || data.length === 0) {
+          errorDiv.textContent = '❌ Location not found';
+          return;
+        }
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+        map.setView([lat, lon], 12);
+        if (marker) {
+          map.removeLayer(marker);
+        }
+        marker = L.marker([lat, lon]).addTo(map).bindPopup(`<b>${city}</b>`).openPopup();
+      } catch {
+        errorDiv.textContent = '❌ Error fetching location';
+      }
+    }
+</script>
+
+</body>
+</html>
